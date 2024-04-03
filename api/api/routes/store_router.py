@@ -9,7 +9,7 @@ store_features_path = Path(__file__).parent.parent / "data" / "features.csv"
 data_reader = DataReader(store_features_path)
 
 router = APIRouter(
-    prefix="/store",
+    prefix="/stores",
     tags=["stores"],
     responses={404: {"description": "Not found"}},
 )
