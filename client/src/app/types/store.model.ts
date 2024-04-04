@@ -11,6 +11,7 @@ export interface Store {
     temperature: number;
     unemployment: number;
     isholiday: boolean;
+    [key: string]: string | number | boolean | undefined;
 }
 
 export interface StoreResponse {

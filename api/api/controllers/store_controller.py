@@ -15,8 +15,8 @@ class StoreController:
         return filtered_data
     
     def get_ids(self):
-        return self.data_reader.get_unique_values("Store")
+        return self.data_reader.get_unique_values("store")
     
     def get_matching_entries(self, store_id: str):
-        return self.data_reader.get_matching_entries("Store", store_id)
+        return self.data_reader.get_matching_entries("store", store_id)
     
