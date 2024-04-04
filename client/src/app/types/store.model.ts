@@ -17,3 +17,7 @@ export interface Store {
 export interface StoreResponse {
     stores: Store[];
 }
+
+export interface StoreIdsResponse {
+    store_ids: number[];
+}

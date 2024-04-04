@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PaginatedRequest } from '../types/request.model';
-import { StoreResponse } from '../types/store.model';
+import { StoreIdsResponse, StoreResponse } from '../types/store.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,6 @@ export class StoreDataService {
   constructor(private http: HttpClient) { }
 
   getStoreData(query: PaginatedRequest) {
-
     let params = new HttpParams()
 
     Object.keys(query).forEach(key => {
@@ -22,5 +21,9 @@ export class StoreDataService {
     })
 
     return this.http.get<StoreResponse>(this.url, { params });
+  }
+
+  getStoreIds() {
+    return this.http.get<StoreIdsResponse>(this.url + '/ids');
   }
 }
