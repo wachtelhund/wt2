@@ -17,7 +17,7 @@ router = APIRouter(
 
 @router.get("/")
 async def get_entries(query: PaginatedRequest = Depends()):
-    return {"stores": controller.get_entries(query)}
+    return controller.get_entries(query)
 
 @router.get("/ids")
 async def get_store_ids():

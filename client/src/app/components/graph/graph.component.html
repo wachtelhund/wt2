@@ -10,9 +10,7 @@
   <mat-card-content>
     <canvas #chartCanvas></canvas>
   </mat-card-content>
-  @if (loading) {
-    <mat-progress-bar mode="query"></mat-progress-bar>
-  }
+  <mat-progress-bar mode="determinate" value={{progress()}}></mat-progress-bar>
 </mat-card>
 <div>
 </div>

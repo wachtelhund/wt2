@@ -16,6 +16,8 @@ export interface Store {
 
 export interface StoreResponse {
     stores: Store[];
+    has_next: boolean;
+    count: number;
 }
 
 export interface StoreIdsResponse {

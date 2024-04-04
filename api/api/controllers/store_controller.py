@@ -8,11 +8,14 @@ class StoreController:
     def get_entries(self, query: PaginatedRequest):
         if query.filter_by and query.filter_value:
             filtered_data = self.data_reader.get_matching_entries(query.filter_by, query.filter_value, query.page, query.page_size)
+            has_next = len(self.data_reader.get_matching_entries(query.filter_by, query.filter_value, query.page + 1, query.page_size)) > 0
         else:
             filtered_data = self.data_reader.get_entries(query.page, query.page_size)
+            has_next = len(self.data_reader.get_entries(query.page + 1, query.page_size)) > 0
         if query.sort_by:
             filtered_data = sorted(filtered_data, key=lambda x: x[query.sort_by], reverse=query.sort_desc)
-        return filtered_data
+        print(has_next)
+        return {"stores": filtered_data, "has_next": has_next, "count": self.data_reader.get_count(query.filter_by, query.filter_value)}
     
     def get_ids(self):
         return self.data_reader.get_unique_values("store")

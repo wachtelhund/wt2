@@ -40,6 +40,8 @@ class DataReader():
         end = start + page_size
         return filteredValue[start:end]
 
-    def get_count(self):
+    def get_count(self, column: str = None, value: str = None):
+        if column and value:
+            return len(self.data[self.data[column].astype(str).str.lower() == value.lower()])
         return self.count
 

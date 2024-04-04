@@ -5,7 +5,7 @@ import { StoreDataService } from '../../services/store-data-service';
 import { Store } from '../../types/store.model';
 import { Chart, LinearScale, registerables } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
-import { Subject, debounce, debounceTime, tap } from 'rxjs';
+import { BehaviorSubject, Subject, debounceTime } from 'rxjs';
 import { StorePickerComponent } from './components/store-picker/store-picker.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { PaginatedRequest } from '../../types/request.model';
@@ -32,7 +32,7 @@ export class GraphComponent {
   private graphData = signal<Store[]>([]);
   private pagination: PaginatedRequest = {
     page: 1,
-    page_size: 50,
+    page_size: 25,
     filter_by: FilterKeys.Store,
     filter_value: "1"
   };
@@ -40,9 +40,11 @@ export class GraphComponent {
   private chart: Chart | null = null;
 
   private nextPage$ = new Subject<void>();
+  private hasNext$ = new BehaviorSubject<boolean>(true);
   private nextPageSubscription$: any;
 
   loading = true;
+  progress = signal<number>(0);
 
   constructor(private storeService: StoreDataService) {
     this.get();
@@ -56,6 +58,8 @@ export class GraphComponent {
   }
 
   clearGraph() {
+    this.hasNext$.next(true);
+    this.pagination.page = 1;
     this.graphData.set([]);
     this.chart?.destroy();
     this.chart = null;
@@ -63,12 +67,17 @@ export class GraphComponent {
   }
 
   get() {
+    if (this.hasNext$.value === false) {
+      return;
+    }
+
     this.loading = true;
     this.storeService.getStoreData(this.pagination)
     .pipe(
-      debounceTime(500)
+      debounceTime(50)
     )
     .subscribe(data => {
+      this.hasNext$.next(data.has_next);
       if (this.chart) {
         this.chart.data.datasets[0].data.push(...data.stores.map(store => store.temperature));
         this.chart.data.datasets[1].data.push(...data.stores.map(store => store.cpi));
@@ -76,6 +85,7 @@ export class GraphComponent {
         this.chart.data.datasets[3].data.push(...data.stores.map(store => store.unemployment));
         // @ts-ignore
         this.chart.data.labels.push(...data.stores.map(store => store.date));
+        this.graphData.set([...this.graphData(), ...data.stores]);
 
         this.chart.update('none');
       } else {
@@ -83,6 +93,7 @@ export class GraphComponent {
         this.initChart();
       }
       this.loading = false;
+      this.progress.set(this.graphData().length / data.count * 100);
     })
   }
 
@@ -156,7 +167,10 @@ export class GraphComponent {
               pinch: {
                 enabled: true
               },
-              mode: 'x'
+              mode: 'x',
+              onZoom: ({chart}) => {
+                this.nextPage$.next()
+              }
             }
           }
         }
