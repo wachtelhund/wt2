@@ -11,6 +11,6 @@ export class StoreDataService {
   constructor(private http: HttpClient) { }
 
   getStoreData(pagination: PaginatedRequest) {
-    return this.http.get<StoreResponse>(`${this.url}?page=${pagination.page}&pageSize=${pagination.pageSize}`);
+    return this.http.get<StoreResponse>(`${this.url}?page=${pagination.page}&page_size=${pagination.page_size}`);
   }
 }
