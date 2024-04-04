@@ -1,16 +1,16 @@
 export interface Store {
-    CPI: number;
-    Date: string;
-    Fuel_Price: number;
-    MarkDown1?: number;
-    MarkDown2?: number;
-    MarkDown3?: number;
-    MarkDown4?: number;
-    MarkDown5?: number;
-    Store: number;
-    Temperature: number;
-    Unemployment: number;
-    IsHoliday: boolean;
+    cpi: number;
+    date: string;
+    fuel_price: number;
+    markDown1?: number;
+    markDown2?: number;
+    markDown3?: number;
+    markDown4?: number;
+    markDown5?: number;
+    store: number;
+    temperature: number;
+    unemployment: number;
+    isholiday: boolean;
 }
 
 export interface StoreResponse {

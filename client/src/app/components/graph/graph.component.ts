@@ -24,7 +24,7 @@ export class GraphComponent {
   graphData: Store[] = [];
   pagination = {
     page: 1,
-    page_size: 25
+    page_size: 50
   };
 
   constructor(private storeService: StoreDataService) {
@@ -40,8 +40,8 @@ export class GraphComponent {
 
   initChart() {
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
-    const labels = this.graphData.map(data => data.Date);
-    const temperatures = this.graphData.map(data => data.Temperature);
+    const labels = this.graphData.map(data => data.date);
+    const temperatures = this.graphData.map(data => data.temperature);
 
     new Chart(ctx!, {
       type: 'line',
@@ -57,21 +57,21 @@ export class GraphComponent {
           },
           {
           label: 'CPI',
-          data: this.graphData.map(data => data.CPI),
+          data: this.graphData.map(data => data.cpi),
           fill: false,
           borderColor: 'rgb(255, 99, 132)',
           tension: 0.1
           },
           {
           label: 'Fuel Price',
-          data: this.graphData.map(data => data.Fuel_Price),
+          data: this.graphData.map(data => data.fuel_price),
           fill: false,
           borderColor: 'rgb(54, 162, 235)',
           tension: 0.1
           },
           {
           label: 'Unemployment',
-          data: this.graphData.map(data => data.Unemployment),
+          data: this.graphData.map(data => data.unemployment),
           fill: false,
           borderColor: 'rgb(255, 205, 86)',
           tension: 0.1
