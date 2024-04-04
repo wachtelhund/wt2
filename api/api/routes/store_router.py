@@ -7,6 +7,7 @@ from api.model.data_reader import DataReader
 
 store_features_path = Path(__file__).parent.parent / "data" / "features.csv"
 data_reader = DataReader(store_features_path)
+controller = StoreController(data_reader)
 
 router = APIRouter(
     prefix="/stores",
@@ -15,5 +16,9 @@ router = APIRouter(
 )
 
 @router.get("/")
-async def get_entries(pagination: PaginatedRequest = Depends()):
-    return {"stores": StoreController(data_reader).get_entries(pagination.page, pagination.page_size)}
+async def get_entries(query: PaginatedRequest = Depends()):
+    return {"stores": controller.get_entries(query)}
+
+@router.get("/ids")
+async def get_store_ids():
+    return {"store_ids": controller.get_ids()}
