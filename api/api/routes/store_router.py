@@ -5,9 +5,11 @@ from api.controllers.store_controller import StoreController
 from api.model.requests import PaginatedRequest
 from api.model.data_reader import DataReader
 
-store_features_path = Path(__file__).parent.parent / "data" / "features.csv"
-data_reader = DataReader(store_features_path)
-controller = StoreController(data_reader)
+store_features_path = Path(__file__).parent.parent / "data" / "Walmart.csv"
+store_path = Path(__file__).parent.parent / "data" / "stores.csv"
+feature_data_reader = DataReader(store_features_path)
+store_data_reader = DataReader(store_path)
+controller = StoreController(feature_data_reader, store_data_reader)
 
 router = APIRouter(
     prefix="/stores",

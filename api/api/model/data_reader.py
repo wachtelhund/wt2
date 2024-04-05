@@ -1,6 +1,5 @@
 import numpy as np
 from pandas import read_csv
-from api.model.requests import PaginatedRequest
 
 class DataReader():
     def __init__(self, path_csv_file: str):
@@ -34,7 +33,8 @@ class DataReader():
         if column not in self.data.columns:
             print(f"Column '{column}' not found in DataFrame.")
             return []
-        filtered_df = self.data[self.data[column].astype(str).str.lower() == value.lower()]
+        value_str = str(value)
+        filtered_df = self.data[self.data[column].astype(str).str.lower() == value_str]
         filteredValue = filtered_df.to_dict(orient="records")
         start = (page - 1) * page_size
         end = start + page_size

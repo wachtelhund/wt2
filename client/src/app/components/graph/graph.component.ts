@@ -29,7 +29,7 @@ Chart.register(LinearScale, zoomPlugin, ...registerables);
 export class GraphComponent {
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
   currentStore: number | null = null;
-  private graphData = signal<Store[]>([]);
+  graphData = signal<Store[]>([]);
   private pagination: PaginatedRequest = {
     page: 1,
     page_size: 25,
@@ -83,6 +83,7 @@ export class GraphComponent {
         this.chart.data.datasets[1].data.push(...data.stores.map(store => store.cpi));
         this.chart.data.datasets[2].data.push(...data.stores.map(store => store.fuel_price));
         this.chart.data.datasets[3].data.push(...data.stores.map(store => store.unemployment));
+        this.chart.data.datasets[4].data.push(...data.stores.map(store => store.weekly_sales / 10000));
         // @ts-ignore
         this.chart.data.labels.push(...data.stores.map(store => store.date));
         this.graphData.set([...this.graphData(), ...data.stores]);
@@ -108,7 +109,7 @@ export class GraphComponent {
 
   initChart() {
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
-    const labels = this.graphData().map(data => data.date);
+    const labels = this.graphData().map(data => data.holiday_flag === 1 ? data.date + ' (Holiday)' : data.date);
 
     this.chart = new Chart(ctx!, {
       type: 'line',
@@ -142,7 +143,14 @@ export class GraphComponent {
           fill: false,
           borderColor: 'rgb(255, 205, 86)',
           tension: 0.1
-          }
+          },
+          {
+          label: 'Weekly Sales (10000$)',
+          data: this.graphData().map(data => data.weekly_sales / 10000),
+          fill: false,
+          borderColor: 'rgb(153, 102, 255)',
+          tension: 0.1
+          },
         ]
       },
       options: {

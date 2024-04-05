@@ -8,6 +8,9 @@
     <app-store-picker (selected)="setStore($event)"></app-store-picker>
   </mat-card-actions>
   <mat-card-content>
+    @if (graphData()[0]) {
+      <p class="text-slate-700">Store size: {{graphData()[0].store_data.size}} (square feet)</p>
+    }
     <canvas #chartCanvas></canvas>
   </mat-card-content>
   <mat-progress-bar mode="determinate" value={{progress()}}></mat-progress-bar>
