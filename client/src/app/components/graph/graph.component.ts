@@ -10,8 +10,10 @@ import { StorePickerComponent } from './components/store-picker/store-picker.com
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { PaginatedRequest } from '../../types/request.model';
 import { FilterKeys } from '../../types/filter.model';
+import annotationPlugin from 'chartjs-plugin-annotation';
+import { AnnotationOptions } from 'chartjs-plugin-annotation';
 
-Chart.register(LinearScale, zoomPlugin, ...registerables);
+Chart.register(LinearScale, zoomPlugin, annotationPlugin, ...registerables);
 
 @Component({
   selector: 'app-graph',
@@ -45,6 +47,8 @@ export class GraphComponent {
 
   loading = true;
   progress = signal<number>(0);
+
+  holidayAnnotations = signal<AnnotationOptions[]>([]);
 
   constructor(private storeService: StoreDataService) {
     this.get();
@@ -84,15 +88,20 @@ export class GraphComponent {
         this.chart.data.datasets[2].data.push(...data.stores.map(store => store.fuel_price));
         this.chart.data.datasets[3].data.push(...data.stores.map(store => store.unemployment));
         this.chart.data.datasets[4].data.push(...data.stores.map(store => store.weekly_sales / 10000));
+
+
         // @ts-ignore
         this.chart.data.labels.push(...data.stores.map(store => store.date));
         this.graphData.set([...this.graphData(), ...data.stores]);
+
+        this.updateChartAnnotations();
 
         this.chart.update('none');
       } else {
         this.graphData.set(data.stores);
         this.initChart();
       }
+      
       this.loading = false;
       this.progress.set(this.graphData().length / data.count * 100);
     })
@@ -107,10 +116,43 @@ export class GraphComponent {
     });
   }
 
+  updateChartAnnotations() {
+    const newAnnotations = this.graphData().reduce((annotations, data, index) => {
+      if (data.holiday_flag === 1) {
+        annotations.push({
+          type: 'box',
+          xMin: index - 0.5,
+          xMax: index + 0.5,
+          backgroundColor: 'rgba(255, 99, 132, 0.25)',
+          borderWidth: 0
+        });
+      }
+      return annotations;
+    }, [] as AnnotationOptions[]);
+
+    if (this.chart && this.chart.options && this.chart.options.plugins && this.chart.options.plugins.annotation) {
+      this.chart.options.plugins.annotation.annotations = newAnnotations;
+    }
+  }
+
+
   initChart() {
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
-    const labels = this.graphData().map(data => data.holiday_flag === 1 ? data.date + ' (Holiday)' : data.date);
+    const labels = this.graphData().map(data => data.date);
 
+    this.holidayAnnotations.set(this.graphData().reduce((annotations, data, index) => {
+      if (data.holiday_flag === 1) {
+        annotations.push({
+          type: 'box',
+          xMin: index - 0.5,
+          xMax: index + 0.5,
+          backgroundColor: 'rgba(255, 99, 132, 0.25)',
+          borderWidth: 0
+        });
+      }
+      return annotations;
+    }, [] as AnnotationOptions[]));
+    
     this.chart = new Chart(ctx!, {
       type: 'line',
       data: {
@@ -160,6 +202,9 @@ export class GraphComponent {
           }
         },
         plugins: {
+          annotation: {
+            annotations: this.holidayAnnotations()
+          },
           zoom: {
             pan: {
               enabled: true,

@@ -10,6 +10,7 @@
   <mat-card-content>
     @if (graphData()[0]) {
       <p class="text-slate-700">Store size: {{graphData()[0].store_data.size}} (square feet)</p>
+      <p class="text-slate-700">Red bars indicate holidays</p>
     }
     <canvas #chartCanvas></canvas>
   </mat-card-content>
