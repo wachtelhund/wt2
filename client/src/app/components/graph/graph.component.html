@@ -1,4 +1,4 @@
-<mat-card class="w-[90%] ml-5 mt-3">
+<mat-card class="w-[90%] h-[min] ml-5 mt-3">
   <mat-card-header>
     <div mat-card-avatar class="example-header-image"></div>
     <mat-card-title>Walmart</mat-card-title>
@@ -7,15 +7,13 @@
   <mat-card-actions>
     <app-store-picker (selected)="setStore($event)"></app-store-picker>
   </mat-card-actions>
-  <mat-card-content>
+  <mat-card-content class="">
     @if (graphData()[0]) {
       <p class="text-slate-700">Store size: {{graphData()[0].store_data.size}} (square feet)</p>
       <p class="text-slate-700">Red bars indicate holidays</p>
     }
-    <canvas #chartCanvas></canvas>
+    <canvas class="w-[100%]" #chartCanvas></canvas>
   </mat-card-content>
-  <mat-progress-bar mode="determinate" value={{progress()}}></mat-progress-bar>
+  <mat-progress-bar class="" mode="determinate" value={{progress()}}></mat-progress-bar>
 </mat-card>
-<div>
-</div>
 

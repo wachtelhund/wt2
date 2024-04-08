@@ -152,7 +152,7 @@ export class GraphComponent {
       }
       return annotations;
     }, [] as AnnotationOptions[]));
-    
+
     this.chart = new Chart(ctx!, {
       type: 'line',
       data: {
@@ -196,6 +196,7 @@ export class GraphComponent {
         ]
       },
       options: {
+        responsive: true,
         scales: {
           y: {
             beginAtZero: false
