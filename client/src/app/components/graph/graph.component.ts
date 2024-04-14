@@ -36,7 +36,9 @@ export class GraphComponent {
     page: 1,
     page_size: 25,
     filter_by: FilterKeys.Store,
-    filter_value: "1"
+    filter_value: "1",
+    from_date: '2011-02-05',
+    to_date: '2012-10-26'
   };
 
   private chart: Chart | null = null;

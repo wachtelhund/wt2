@@ -1,6 +1,7 @@
 from pathlib import Path
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
+from api.model.client_error import ClientError
 from api.controllers.store_controller import StoreController
 from api.model.requests import PaginatedRequest
 from api.model.data_reader import DataReader
@@ -19,7 +20,11 @@ router = APIRouter(
 
 @router.get("/")
 async def get_entries(query: PaginatedRequest = Depends()):
-    return controller.get_entries(query)
+    try:
+        return controller.get_entries(query)
+    except ClientError as e:
+        print(f"ClientError: {e.error}")
+        raise HTTPException(e.status_code, detail=e.client_message)
 
 @router.get("/ids")
 async def get_store_ids():
