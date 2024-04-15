@@ -12,6 +12,12 @@ import { PaginatedRequest } from '../../types/request.model';
 import { FilterKeys } from '../../types/filter.model';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import { AnnotationOptions } from 'chartjs-plugin-annotation';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatInputModule } from '@angular/material/input';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 Chart.register(LinearScale, zoomPlugin, annotationPlugin, ...registerables);
 
@@ -22,9 +28,15 @@ Chart.register(LinearScale, zoomPlugin, annotationPlugin, ...registerables);
     MatCardModule,
     MatButtonModule,
     StorePickerComponent,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatDatepickerModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    CommonModule,
+    FormsModule,
+    MatIconModule
   ],
-  providers: [StoreDataService],
+  providers: [StoreDataService, provideNativeDateAdapter()],
   templateUrl: './graph.component.html',
   styleUrl: './graph.component.scss'
 })
@@ -37,9 +49,10 @@ export class GraphComponent {
     page_size: 25,
     filter_by: FilterKeys.Store,
     filter_value: "1",
-    from_date: '2011-02-05',
-    to_date: '2012-10-26'
   };
+
+  startDate: Date | null = null;
+  endDate: Date | null = null;
 
   private chart: Chart | null = null;
 
@@ -55,6 +68,28 @@ export class GraphComponent {
   constructor(private storeService: StoreDataService) {
     this.get();
     this.setupNextPageSubscription();
+  }
+
+  hasSelectedDates() {
+    return this.endDate == null;
+  }
+
+  onClearDates() {
+    this.startDate = null;
+    this.endDate = null;
+    delete this.pagination.from_date;
+    delete this.pagination.to_date;
+    this.pagination.page_size = 25;
+    this.clearGraph();
+  }
+
+  onDateEnd(event: any) {
+    if (this.startDate && this.endDate) {
+      this.pagination.from_date = new Date(this.startDate).toISOString()
+      this.pagination.to_date = new Date(this.endDate).toISOString()
+      this.pagination.page_size = 50;
+      this.clearGraph();
+    }
   }
 
   setStore(store: number) {

@@ -4,13 +4,31 @@
     <mat-card-title>Walmart</mat-card-title>
     <mat-card-subtitle>Store names are anonymized</mat-card-subtitle>
   </mat-card-header>
-  <mat-card-actions>
-    <app-store-picker (selected)="setStore($event)"></app-store-picker>
+  <mat-card-actions class="flex flex-col">
+    <div class="mr-5">
+      <mat-form-field>
+        <mat-label>Enter a date range</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate placeholder="Start date" [(ngModel)]="startDate">
+          <input (dateChange)="onDateEnd($event)" matEndDate placeholder="End date" [(ngModel)]="endDate">
+        </mat-date-range-input>
+        <mat-hint>MM/DD/YYYY - MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      </mat-form-field>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+
+    </div>
+    <div>
+      <app-store-picker class="mr-5" (selected)="setStore($event)"></app-store-picker>
+      <button disabled={{hasSelectedDates()}} mat-raised-button color="primary" (click)="onClearDates()"><mat-icon>event_busy</mat-icon>Clear dates</button>
+    </div>
   </mat-card-actions>
   <mat-card-content class="">
     @if (graphData()[0]) {
-      <p class="text-slate-700">Store size: {{graphData()[0].store_data.size}} (square feet)</p>
-      <p class="text-slate-700">Red bars indicate holidays</p>
+      <div class="mt-5">
+        <p class="text-slate-700">Store size: {{graphData()[0].store_data.size}} (square feet)</p>
+        <p class="text-slate-700">Red bars indicate holidays</p>
+      </div>
     }
     <canvas class="w-[100%]" #chartCanvas></canvas>
   </mat-card-content>

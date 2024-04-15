@@ -1,4 +1,4 @@
-<button mat-button [matMenuTriggerFor]="menu"><mat-icon>storefront</mat-icon> Store ({{currentStore}})</button>
+<button color="primary" mat-raised-button [matMenuTriggerFor]="menu"><mat-icon>storefront</mat-icon> Store ({{currentStore}})</button>
 <mat-menu class="max-h-60" #menu="matMenu">
     @for (item of menuItems(); track $index) {
         <button (click)="onItemSelected(item)" mat-menu-item>Store {{item}}</button>

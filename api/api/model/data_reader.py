@@ -29,6 +29,9 @@ class DataReader():
 
     def clean_data(self):
         self.data = self.data.replace([np.nan, np.inf, -np.inf], None)
+        if "date" in self.data.columns:
+            self.data["date"] = pd.to_datetime(self.data["date"], format="mixed")
+            self.data["date"] = self.data["date"].dt.strftime("%m-%d-%Y")
 
     def get_entries(self, page: int, page_size: int):
         start = (page - 1) * page_size
@@ -43,20 +46,26 @@ class DataReader():
     def get_range(self, column: str, min_value: float, max_value: float):
         return self.data[(self.data[column] >= min_value) & (self.data[column] <= max_value)].to_dict(orient="records")
     
-    def get_potential_date_range(self, column: str, from_date: str, to_date: str, format="%d-%m-%Y"):
+    def get_potential_date_range(self, column: str, from_date: str, to_date: str, format="%m-%d-%Y"):
         if column not in self.data.columns:
             raise ValueError(f"Column '{column}' not found in DataFrame.")
-        self.data[column] = pd.to_datetime(self.data[column], format=format)
+
+        from_date = pd.to_datetime(from_date, format="mixed").tz_localize(None)
+        to_date = pd.to_datetime(to_date, format="mixed").tz_localize(None)
+
+        self.data[column] = pd.to_datetime(self.data[column], format="mixed")
         if not from_date or not to_date:
             raise ValueError("From date and To date are required.")
         condition = (self.data[column] > from_date) & (self.data[column] <= to_date)
         df = self.data.loc[condition]
+        df.loc[:, column] = df[column].dt.strftime(format)
+
         return df.to_dict(orient="records")
     
     def get_unique_values(self, column: str):
         return self.data[column].unique().tolist()
     
-    def get_matching_entries(self, column: str, value: str, page: int, page_size: int, from_date: str = None, to_date: str = None):
+    def get_matching_entries(self, column: str, value: str, page: int, page_size: int):
         if column not in self.data.columns:
             raise ValueError(f"Column '{column}' not found in DataFrame.")
         value_str = str(value)
@@ -70,4 +79,7 @@ class DataReader():
         if column and value:
             return len(self.data[self.data[column].astype(str).str.lower() == value.lower()])
         return self.count
+    
+    def get_sorted_copy(self, sort_by, sort_desc=False):
+        return self.data.copy(deep=True).sort_values(sort_by, ascending=not sort_desc)
 
