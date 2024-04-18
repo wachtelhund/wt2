@@ -38,6 +38,16 @@
           },
           "configurations": {
             "production": {
+              "index": {
+                "input": "src/deployment/prod/index.html",
+                "output": "index.html"
+              },
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
@@ -49,6 +59,10 @@
                   "maximumWarning": "2kb",
                   "maximumError": "4kb"
                 }
+              ],
+              "assets": [
+                "src/favicon.ico",
+                "src/assets"
               ],
               "outputHashing": "all"
             },
